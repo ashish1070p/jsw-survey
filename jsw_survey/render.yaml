@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: jsw-motors-survey
+    env: python
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput
+    startCommand: gunicorn jsw_training.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: JSW@Admin2024
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jsw-survey-db
+          property: connectionString
+
+databases:
+  - name: jsw-survey-db
+    databaseName: jsw_survey
+    user: jsw_admin
+    plan: free

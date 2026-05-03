@@ -1,0 +1,172 @@
+{% extends "surveys/base.html" %}
+{% block title %}Happy Sheet — {{ role }} | JSW Motors{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-content">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+      <span class="role-badge role-{{ role }}">{{ role }}</span>
+      <span style="background:rgba(255,255,255,0.15);color:white;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;">Level 1 — Reaction Survey</span>
+    </div>
+    <h1>{{ meta.icon }} {{ meta.title }}</h1>
+    <p>{{ meta.description }}</p>
+  </div>
+</div>
+
+<div class="main-content">
+  {% if error %}
+  <div class="alert alert-danger">⚠️ {{ error }}</div>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <!-- Header Information -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📄</div>
+        <div>
+          <div class="card-title">Participant Information</div>
+          <div class="card-subtitle">Fill in your details before rating the training</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Employee ID / Code <span class="required">*</span></label>
+          <input class="form-control" type="text" name="employee_id" value="{{ prefill.emp_code }}" placeholder="e.g. JSW-MT-0042" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Full Name <span class="required">*</span></label>
+          <input class="form-control" type="text" name="name" value="{{ prefill.name }}" placeholder="Your full name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date <span class="required">*</span></label>
+          <input class="form-control" type="date" name="date" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Training Program Name <span class="required">*</span></label>
+          <input class="form-control" type="text" name="program_name" placeholder="e.g. EV Technical Foundations" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Training Vendor / Provider</label>
+          <input class="form-control" type="text" name="vendor" placeholder="e.g. Internal / External vendor name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Competency / Module Covered</label>
+          <input class="form-control" type="text" name="competency" placeholder="e.g. T1 – EV Systems">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mode of Training</label>
+          <select class="form-control" name="mode">
+            <option value="">— Select Mode —</option>
+            <option>Classroom / ILT</option>
+            <option>Virtual / Online</option>
+            <option>Blended</option>
+            <option>On-the-Job</option>
+            <option>Workshop</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Trainer / Facilitator Name</label>
+          <input class="form-control" type="text" name="trainer" placeholder="Trainer's name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Supervisor Name</label>
+          <input class="form-control" type="text" name="supervisor" placeholder="Your direct supervisor">
+        </div>
+        <div class="form-group">
+          <label class="form-label">HR-BP Name</label>
+          <input class="form-control" type="text" name="hr_bp" placeholder="HR Business Partner name">
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating Questions -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">⭐</div>
+        <div>
+          <div class="card-title">Training Effectiveness Ratings</div>
+          <div class="card-subtitle">Rate each statement on a scale of 1 (Strongly Disagree) to 5 (Strongly Agree)</div>
+        </div>
+      </div>
+
+      <div class="alert alert-info" style="margin-bottom:1.5rem;">
+        📌 <strong>Scale:</strong> 1 = Strongly Disagree &nbsp;|&nbsp; 2 = Disagree &nbsp;|&nbsp; 3 = Neutral &nbsp;|&nbsp; 4 = Agree &nbsp;|&nbsp; 5 = Strongly Agree
+        &nbsp;&nbsp;Target average: ≥ 4.0/5.0
+      </div>
+
+      {% for code, question in questions %}
+      <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #edf2f7;">
+        <div class="form-label" style="margin-bottom:8px;">
+          <span style="background:var(--jsw-light);color:var(--jsw-navy);padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;margin-right:8px;">{{ code }}</span>
+          {{ question }} <span class="required">*</span>
+        </div>
+        <div class="rating-group">
+          {% for val in "12345" %}
+          <div class="rating-option">
+            <input type="radio" name="{{ code|lower }}" id="{{ code|lower }}_{{ val }}" value="{{ val }}" required>
+            <label for="{{ code|lower }}_{{ val }}">{{ val }}</label>
+          </div>
+          {% endfor %}
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:#718096;margin-top:4px;max-width:290px;">
+          <span>1 — Strongly Disagree</span><span>5 — Strongly Agree</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- NPS -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">🔢</div>
+        <div>
+          <div class="card-title">Net Promoter Score</div>
+          <div class="card-subtitle">Target: NPS ≥ 8/10</div>
+        </div>
+      </div>
+      <p class="form-label" style="margin-bottom:10px;">
+        On a scale of 0–10, how likely are you to recommend this training to a colleague? <span class="required">*</span>
+      </p>
+      <div class="nps-group">
+        {% for i in "0123456789" %}
+        <div class="nps-option">
+          <input type="radio" name="nps_score" id="nps_{{ i }}" value="{{ i }}" required>
+          <label for="nps_{{ i }}">{{ i }}</label>
+        </div>
+        {% endfor %}
+        <div class="nps-option">
+          <input type="radio" name="nps_score" id="nps_10" value="10">
+          <label for="nps_10">10</label>
+        </div>
+      </div>
+      <div class="nps-labels" style="max-width:550px;">
+        <span>0 — Not at all</span><span>10 — Extremely likely</span>
+      </div>
+    </div>
+
+    <!-- Open Feedback -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">💬</div>
+        <div>
+          <div class="card-title">Open Feedback</div>
+          <div class="card-subtitle">Your qualitative insights help us improve</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">What did you find most valuable about this training?</label>
+        <textarea class="form-control" name="open_feedback" rows="4" placeholder="Share specific highlights, suggestions for improvement, or any other feedback..."></textarea>
+      </div>
+    </div>
+
+    <div class="sticky-submit">
+      <div class="submit-info">All fields marked <span style="color:var(--jsw-red)">*</span> are required. Your response is saved securely.</div>
+      <button type="submit" class="btn btn-primary btn-lg">
+        Submit Happy Sheet ✓
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

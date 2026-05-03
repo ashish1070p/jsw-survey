@@ -1,0 +1,74 @@
+{% extends "surveys/base.html" %}
+{% block title %}QR Codes — JSW Motors Admin{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-content">
+    <h1>📱 Survey QR Codes & Links</h1>
+    <p>Share these QR codes or URLs with participants. Each form is role-specific and stores responses directly to the cloud database.</p>
+  </div>
+</div>
+
+<div class="main-content wide">
+  <div class="alert alert-info">
+    🔗 <strong>Base URL:</strong> {{ base_url }} &nbsp;|&nbsp; 12 survey forms across 2 roles (MT & GET) &nbsp;|&nbsp; Print or share QR codes with participants
+  </div>
+
+  {% regroup survey_links by role as role_groups %}
+  {% for rgroup in role_groups %}
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">{% if rgroup.grouper == 'MT (L11 | Band 4)' %}🔵{% else %}🔴{% endif %}</div>
+      <div>
+        <div class="card-title">{{ rgroup.grouper }}</div>
+        <div class="card-subtitle">6 survey forms — click any URL to open directly</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;">
+      {% for item in rgroup.list %}
+      <div style="border:2px solid #e8edf5;border-radius:14px;padding:1.25rem;text-align:center;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 6px 20px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow=''">
+        <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:1.4rem;">{{ item.icon }}</span>
+          <div style="text-align:left;">
+            <div style="font-weight:700;font-size:0.9rem;color:#1A2D5A;">{{ item.title }}</div>
+            <div style="font-size:0.72rem;color:#718096;">{{ item.subtitle }}</div>
+          </div>
+        </div>
+
+        <!-- QR Code -->
+        <div style="background:white;border:1px solid #edf2f7;border-radius:10px;padding:10px;display:inline-block;margin:8px 0;">
+          <img src="data:image/png;base64,{{ item.qr_b64 }}" alt="QR Code for {{ item.title }}" style="width:140px;height:140px;display:block;">
+        </div>
+
+        <!-- URL -->
+        <div style="background:#f8f9fa;border-radius:8px;padding:8px;margin-top:8px;word-break:break-all;font-size:0.72rem;color:#2E4B8F;font-family:monospace;">
+          {{ item.url }}
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;">
+          <a href="{{ item.url }}" target="_blank" class="btn btn-outline btn-sm">Open →</a>
+          <button onclick="copyToClipboard('{{ item.url }}')" class="btn btn-primary btn-sm">Copy URL</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <div style="text-align:center;margin-top:1rem;">
+    <a href="/admin-dashboard/" class="btn btn-outline">← Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(function() {
+    alert('URL copied: ' + text);
+  }).catch(function() {
+    prompt('Copy this URL:', text);
+  });
+}
+</script>
+{% endblock %}

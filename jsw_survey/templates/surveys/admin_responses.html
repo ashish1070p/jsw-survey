@@ -1,0 +1,105 @@
+{% extends "surveys/base.html" %}
+{% block title %}{{ title }} — JSW Admin{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-content">
+    <h1>{{ meta.icon|default:"📋" }} {{ title }}</h1>
+    <p>View submitted responses. Filter by role or export to Excel.</p>
+  </div>
+</div>
+
+<div class="main-content wide">
+  <!-- Filters + Export -->
+  <div class="card" style="padding:1rem 1.5rem;">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <strong style="font-size:0.88rem;">Filter by Role:</strong>
+      <a href="/admin-responses/{{ survey_type }}/" class="btn btn-sm {% if not role_filter %}btn-primary{% else %}btn-outline{% endif %}">All</a>
+      <a href="/admin-responses/{{ survey_type }}/?role=MT" class="btn btn-sm {% if role_filter == 'MT' %}btn-primary{% else %}btn-outline{% endif %}">MT Only</a>
+      <a href="/admin-responses/{{ survey_type }}/?role=GET" class="btn btn-sm {% if role_filter == 'GET' %}btn-primary{% else %}btn-outline{% endif %}">GET Only</a>
+      <div style="margin-left:auto;display:flex;gap:8px;">
+        <a href="/admin-export/{{ survey_type }}/{% if role_filter %}?role={{ role_filter }}{% endif %}" class="btn btn-success btn-sm">↓ Export Excel</a>
+        <a href="/admin-dashboard/" class="btn btn-outline btn-sm">← Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div style="overflow-x:auto;">
+      {% if responses %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Role</th>
+            <th>Emp ID</th>
+            <th>Name</th>
+            {% if survey_type == 'happy-sheet' %}
+            <th>Date</th><th>Program</th><th>Avg Score</th><th>NPS</th><th>Submitted</th>
+            {% elif survey_type == 'pre-assessment' or survey_type == 'post-assessment' %}
+            <th>Rater</th><th>Date</th><th>Manager</th><th># Comps Rated</th><th>Submitted</th>
+            {% else %}
+            <th>Obs.</th><th>Supervisor</th><th>Date</th><th>Avg Rating</th><th>Submitted</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in responses %}
+          <tr>
+            <td style="color:#718096;font-size:0.8rem;">{{ forloop.counter }}</td>
+            <td><span class="role-badge role-{{ r.role }}">{{ r.role }}</span></td>
+            <td style="font-family:monospace;font-size:0.82rem;">{{ r.employee_id }}</td>
+            <td style="font-weight:600;">{{ r.name }}</td>
+            {% if survey_type == 'happy-sheet' %}
+            <td>{{ r.date }}</td>
+            <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ r.program_name }}">{{ r.program_name }}</td>
+            <td>
+              <span style="font-weight:700;color:{% if r.average_score >= 4.0 %}#2e7d32{% elif r.average_score >= 3.0 %}#e65100{% else %}#c62828{% endif %};">
+                {{ r.average_score }}/5
+              </span>
+            </td>
+            <td>
+              <span style="font-weight:700;color:{% if r.nps_score >= 8 %}#2e7d32{% elif r.nps_score >= 6 %}#e65100{% else %}#c62828{% endif %};">
+                {{ r.nps_score }}/10
+              </span>
+            </td>
+            <td style="color:#718096;font-size:0.8rem;">{{ r.submitted_at|date:"d M Y H:i" }}</td>
+            {% elif survey_type == 'pre-assessment' or survey_type == 'post-assessment' %}
+            <td><span style="background:#e8f0fe;color:#1A2D5A;padding:2px 8px;border-radius:4px;font-size:0.78rem;font-weight:600;">{{ r.rater_type }}</span></td>
+            <td>{{ r.date }}</td>
+            <td>{{ r.manager_name|default:"—" }}</td>
+            <td>{{ r.competency_ratings|length }} rated</td>
+            <td style="color:#718096;font-size:0.8rem;">{{ r.submitted_at|date:"d M Y H:i" }}</td>
+            {% else %}
+            <td><span style="background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:4px;font-size:0.78rem;font-weight:600;">Day {{ r.obs_number }}</span></td>
+            <td>{{ r.supervisor }}</td>
+            <td>{{ r.date }}</td>
+            <td>
+              <span style="font-weight:700;color:{% if r.average_rating >= 3.0 %}#2e7d32{% elif r.average_rating >= 2.0 %}#e65100{% else %}#c62828{% endif %};">
+                {{ r.average_rating }}/4
+              </span>
+            </td>
+            <td style="color:#718096;font-size:0.8rem;">{{ r.submitted_at|date:"d M Y H:i" }}</td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="text-align:center;padding:3rem;color:#718096;">
+        <div style="font-size:3rem;margin-bottom:1rem;">📭</div>
+        <div style="font-weight:600;margin-bottom:6px;">No responses yet</div>
+        <div style="font-size:0.85rem;">Responses will appear here once participants submit the survey.</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if responses %}
+  <div style="text-align:right;color:#718096;font-size:0.82rem;margin-top:-0.5rem;">
+    Showing {{ responses|length }} response{% if responses|length != 1 %}s{% endif %}
+    {% if role_filter %}for {{ role_filter }}{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

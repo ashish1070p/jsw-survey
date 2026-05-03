@@ -1,0 +1,272 @@
+{% extends "surveys/base.html" %}
+{% block title %}Admin Dashboard — JSW Motors{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-content">
+    <h1>⚙️ Admin Dashboard</h1>
+    <p>JSW Motors Training Evaluation — Response Management Centre</p>
+  </div>
+</div>
+
+<div class="main-content wide">
+
+  <!-- Stats -->
+  <div class="stats-grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));">
+    <div class="stat-card" style="border-top-color:#28a745;">
+      <div class="stat-number" style="color:#28a745;">{{ stats.total }}</div>
+      <div class="stat-label">Total Responses</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ stats.happy_sheet }}</div>
+      <div class="stat-label">Happy Sheets</div>
+    </div>
+    <div class="stat-card" style="border-top-color:#17a2b8;">
+      <div class="stat-number" style="color:#17a2b8;">{{ stats.pre_assessment }}</div>
+      <div class="stat-label">Pre-Assessments</div>
+    </div>
+    <div class="stat-card" style="border-top-color:#6f42c1;">
+      <div class="stat-number" style="color:#6f42c1;">{{ stats.post_assessment }}</div>
+      <div class="stat-label">Post-Assessments</div>
+    </div>
+    <div class="stat-card" style="border-top-color:#fd7e14;">
+      <div class="stat-number" style="color:#fd7e14;">{{ stats.bars_technical }}</div>
+      <div class="stat-label">BARS Technical</div>
+    </div>
+    <div class="stat-card" style="border-top-color:#dc3545;">
+      <div class="stat-number" style="color:#dc3545;">{{ stats.bars_behavioural }}</div>
+      <div class="stat-label">BARS Behavioural</div>
+    </div>
+    <div class="stat-card" style="border-top-color:#e83e8c;">
+      <div class="stat-number" style="color:#e83e8c;">{{ stats.bars_leadership }}</div>
+      <div class="stat-label">BARS Leadership</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+
+    <!-- Left: Survey Links with Export -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📊</div>
+          <div>
+            <div class="card-title">View & Export Responses</div>
+            <div class="card-subtitle">Filter by role, view records, download Excel</div>
+          </div>
+        </div>
+
+        {% for stype, label, icon, color in surveys_list %}
+        {% endfor %}
+
+        <!-- MT Surveys -->
+        <div class="section-header">🔵 Management Trainee (MT)</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;">
+          {% for item in survey_items %}
+          {% endfor %}
+
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">😊 Happy Sheet</span>
+            <div class="btn-group">
+              <a href="/admin-responses/happy-sheet/?role=MT" class="btn btn-outline btn-sm">View MT</a>
+              <a href="/admin-export/happy-sheet/?role=MT" class="btn btn-primary btn-sm">↓ Export MT</a>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">📋 Pre-Assessment</span>
+            <div class="btn-group">
+              <a href="/admin-responses/pre-assessment/?role=MT" class="btn btn-outline btn-sm">View MT</a>
+              <a href="/admin-export/pre-assessment/?role=MT" class="btn btn-primary btn-sm">↓ Export MT</a>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">📊 Post-Assessment</span>
+            <div class="btn-group">
+              <a href="/admin-responses/post-assessment/?role=MT" class="btn btn-outline btn-sm">View MT</a>
+              <a href="/admin-export/post-assessment/?role=MT" class="btn btn-primary btn-sm">↓ Export MT</a>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">⚙️ BARS Technical</span>
+            <div class="btn-group">
+              <a href="/admin-responses/bars-technical/?role=MT" class="btn btn-outline btn-sm">View MT</a>
+              <a href="/admin-export/bars-technical/?role=MT" class="btn btn-primary btn-sm">↓ Export MT</a>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">🎯 BARS Behavioural</span>
+            <div class="btn-group">
+              <a href="/admin-responses/bars-behavioural/?role=MT" class="btn btn-outline btn-sm">View MT</a>
+              <a href="/admin-export/bars-behavioural/?role=MT" class="btn btn-primary btn-sm">↓ Export MT</a>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">🏆 BARS Leadership</span>
+            <div class="btn-group">
+              <a href="/admin-responses/bars-leadership/?role=MT" class="btn btn-outline btn-sm">View MT</a>
+              <a href="/admin-export/bars-leadership/?role=MT" class="btn btn-primary btn-sm">↓ Export MT</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- GET Surveys -->
+        <div class="section-header">🔴 Graduate Engineer Trainee (GET)</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">😊 Happy Sheet</span>
+            <div class="btn-group">
+              <a href="/admin-responses/happy-sheet/?role=GET" class="btn btn-outline btn-sm">View GET</a>
+              <a href="/admin-export/happy-sheet/?role=GET" class="btn btn-primary btn-sm">↓ Export GET</a>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">📋 Pre-Assessment</span>
+            <div class="btn-group">
+              <a href="/admin-responses/pre-assessment/?role=GET" class="btn btn-outline btn-sm">View GET</a>
+              <a href="/admin-export/pre-assessment/?role=GET" class="btn btn-primary btn-sm">↓ Export GET</a>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">📊 Post-Assessment</span>
+            <div class="btn-group">
+              <a href="/admin-responses/post-assessment/?role=GET" class="btn btn-outline btn-sm">View GET</a>
+              <a href="/admin-export/post-assessment/?role=GET" class="btn btn-primary btn-sm">↓ Export GET</a>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">⚙️ BARS Technical</span>
+            <div class="btn-group">
+              <a href="/admin-responses/bars-technical/?role=GET" class="btn btn-outline btn-sm">View GET</a>
+              <a href="/admin-export/bars-technical/?role=GET" class="btn btn-primary btn-sm">↓ Export GET</a>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">🎯 BARS Behavioural</span>
+            <div class="btn-group">
+              <a href="/admin-responses/bars-behavioural/?role=GET" class="btn btn-outline btn-sm">View GET</a>
+              <a href="/admin-export/bars-behavioural/?role=GET" class="btn btn-primary btn-sm">↓ Export GET</a>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8f9fa;border-radius:8px;border:1px solid #e2e8f0;">
+            <span style="font-size:0.88rem;font-weight:600;">🏆 BARS Leadership</span>
+            <div class="btn-group">
+              <a href="/admin-responses/bars-leadership/?role=GET" class="btn btn-outline btn-sm">View GET</a>
+              <a href="/admin-export/bars-leadership/?role=GET" class="btn btn-primary btn-sm">↓ Export GET</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export All -->
+        <div class="section-header">📦 Export All Responses</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:0.5rem;">
+          <a href="/admin-export/happy-sheet/" class="btn btn-success btn-sm">😊 All Happy Sheets</a>
+          <a href="/admin-export/pre-assessment/" class="btn btn-success btn-sm">📋 All Pre-Assessments</a>
+          <a href="/admin-export/post-assessment/" class="btn btn-success btn-sm">📊 All Post-Assessments</a>
+          <a href="/admin-export/bars-technical/" class="btn btn-success btn-sm">⚙️ All BARS Technical</a>
+          <a href="/admin-export/bars-behavioural/" class="btn btn-success btn-sm">🎯 All BARS Behavioural</a>
+          <a href="/admin-export/bars-leadership/" class="btn btn-success btn-sm">🏆 All BARS Leadership</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Recent + QR + Survey URLs -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📱</div>
+          <div>
+            <div class="card-title">Survey Links & QR Codes</div>
+          </div>
+        </div>
+        <p style="font-size:0.85rem;color:#555;margin-bottom:1rem;">
+          Generate QR codes for all 12 survey forms to share with MT and GET participants.
+        </p>
+        <a href="/admin-qr-codes/" class="btn btn-primary btn-block">
+          📱 View All QR Codes →
+        </a>
+        <div style="margin-top:1rem;background:#f8f9fa;border-radius:8px;padding:12px;">
+          <div style="font-size:0.78rem;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Direct Survey URLs</div>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:0.78rem;">
+            <div>🔵 MT: <a href="{{ base_url }}/survey/mt/happy-sheet/" style="color:#2E4B8F;">Happy Sheet</a> | <a href="{{ base_url }}/survey/mt/pre-assessment/" style="color:#2E4B8F;">Pre</a> | <a href="{{ base_url }}/survey/mt/post-assessment/" style="color:#2E4B8F;">Post</a></div>
+            <div>🔵 MT: <a href="{{ base_url }}/survey/mt/bars-technical/" style="color:#2E4B8F;">BARS Tech</a> | <a href="{{ base_url }}/survey/mt/bars-behavioural/" style="color:#2E4B8F;">BARS Beh</a> | <a href="{{ base_url }}/survey/mt/bars-leadership/" style="color:#2E4B8F;">BARS Lead</a></div>
+            <div>🔴 GET: <a href="{{ base_url }}/survey/get/happy-sheet/" style="color:#C41E3A;">Happy Sheet</a> | <a href="{{ base_url }}/survey/get/pre-assessment/" style="color:#C41E3A;">Pre</a> | <a href="{{ base_url }}/survey/get/post-assessment/" style="color:#C41E3A;">Post</a></div>
+            <div>🔴 GET: <a href="{{ base_url }}/survey/get/bars-technical/" style="color:#C41E3A;">BARS Tech</a> | <a href="{{ base_url }}/survey/get/bars-behavioural/" style="color:#C41E3A;">BARS Beh</a> | <a href="{{ base_url }}/survey/get/bars-leadership/" style="color:#C41E3A;">BARS Lead</a></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Responses -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">🕐</div>
+          <div><div class="card-title">Recent Happy Sheet Responses</div></div>
+        </div>
+        {% if recent_happy %}
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Role</th><th>Avg</th><th>NPS</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for r in recent_happy %}
+            <tr>
+              <td style="font-weight:600;">{{ r.name }}</td>
+              <td><span class="role-badge role-{{ r.role }}">{{ r.role }}</span></td>
+              <td>
+                <span style="font-weight:700;color:{% if r.average_score >= 4 %}#2e7d32{% elif r.average_score >= 3 %}#e65100{% else %}#c62828{% endif %};">
+                  {{ r.average_score }}
+                </span>
+              </td>
+              <td>{{ r.nps_score }}</td>
+              <td style="color:#718096;font-size:0.8rem;">{{ r.date }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div style="text-align:center;padding:1.5rem;color:#718096;font-size:0.88rem;">No responses yet</div>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📋</div>
+          <div><div class="card-title">Recent Pre-Assessment Responses</div></div>
+        </div>
+        {% if recent_pre %}
+        <table class="data-table">
+          <thead><tr><th>Name</th><th>Role</th><th>Rater</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for r in recent_pre %}
+            <tr>
+              <td style="font-weight:600;">{{ r.name }}</td>
+              <td><span class="role-badge role-{{ r.role }}">{{ r.role }}</span></td>
+              <td style="font-size:0.8rem;">{{ r.rater_type }}</td>
+              <td style="color:#718096;font-size:0.8rem;">{{ r.date }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div style="text-align:center;padding:1.5rem;color:#718096;font-size:0.88rem;">No responses yet</div>
+        {% endif %}
+      </div>
+
+      <!-- Role breakdown -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📈</div>
+          <div><div class="card-title">Role Breakdown (Happy Sheets)</div></div>
+        </div>
+        <div style="display:flex;gap:1rem;">
+          <div style="flex:1;text-align:center;padding:1rem;background:#e8f0fe;border-radius:10px;">
+            <div style="font-size:2rem;font-weight:800;color:#1A2D5A;">{{ mt_happy }}</div>
+            <div style="font-size:0.78rem;color:#718096;margin-top:4px;">MT Responses</div>
+          </div>
+          <div style="flex:1;text-align:center;padding:1rem;background:#fce4ec;border-radius:10px;">
+            <div style="font-size:2rem;font-weight:800;color:#C41E3A;">{{ get_happy }}</div>
+            <div style="font-size:0.78rem;color:#718096;margin-top:4px;">GET Responses</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends "surveys/base.html" %}
+{% block title %}{{ meta.title }} — {{ role }} | JSW Motors{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-content">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+      <span class="role-badge role-{{ role }}">{{ role }}</span>
+      <span style="background:rgba(255,255,255,0.15);color:white;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;">Level 2 — Learning Assessment</span>
+    </div>
+    <h1>{{ meta.icon }} {{ meta.title }}</h1>
+    <p>{{ meta.description }}</p>
+  </div>
+</div>
+
+<div class="main-content">
+  {% if error %}
+  <div class="alert alert-danger">⚠️ {{ error }}</div>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <!-- Rater Type -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">👤</div>
+        <div>
+          <div class="card-title">Who is completing this assessment?</div>
+          <div class="card-subtitle">Both Candidate and Manager rate independently</div>
+        </div>
+      </div>
+      <div class="alert alert-warning" style="margin-bottom:1rem;">
+        ⚠️ Both the <strong>Candidate</strong> and their <strong>Line Manager</strong> should complete this form independently. Divergence > 1 point triggers HR-BP calibration.
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:10px;padding:14px 20px;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;flex:1;min-width:180px;transition:all 0.2s;" id="lbl_candidate">
+          <input type="radio" name="rater_type" value="candidate" required onchange="handleRaterChange(this)"> 🧑‍💼 <strong>Candidate</strong> (Self-rating)
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;padding:14px 20px;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;flex:1;min-width:180px;transition:all 0.2s;" id="lbl_manager">
+          <input type="radio" name="rater_type" value="manager" onchange="handleRaterChange(this)"> 👨‍💼 <strong>Manager</strong> (Manager rating)
+        </label>
+      </div>
+    </div>
+
+    <!-- Participant Info -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📄</div>
+        <div>
+          <div class="card-title">Participant Details</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Employee ID <span class="required">*</span></label>
+          <input class="form-control" type="text" name="employee_id" value="{{ prefill.emp_code }}" placeholder="JSW Employee Code" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Employee Name <span class="required">*</span></label>
+          <input class="form-control" type="text" name="name" value="{{ prefill.name }}" placeholder="Full name of employee being rated" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role / Grade</label>
+          <input class="form-control" type="text" name="role_grade" value="{{ prefill.grade|default:'' }}" placeholder="e.g. MT L11 | Band 4">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Department / Function</label>
+          <input class="form-control" type="text" name="dept" placeholder="e.g. Manufacturing, HR, Finance">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Manager Name</label>
+          <input class="form-control" type="text" name="manager_name" placeholder="Direct Line Manager name">
+        </div>
+        {% if survey_type == 'post' %}
+        <div class="form-group">
+          <label class="form-label">Training Program Completed</label>
+          <input class="form-control" type="text" name="training_completed" placeholder="Training program name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Days Since Training Completion</label>
+          <input class="form-control" type="number" name="days_since_training" min="0" max="365" placeholder="e.g. 30">
+        </div>
+        {% endif %}
+        <div class="form-group">
+          <label class="form-label">Assessment Date <span class="required">*</span></label>
+          <input class="form-control" type="date" name="date" required>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating Scale Guide -->
+    <div class="card" style="padding:1.25rem;">
+      <div class="section-header">📊 Competency Rating Scale</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:0.5rem;">
+        <div style="background:#f8f9fa;border-radius:8px;padding:12px;border-left:4px solid #c62828;">
+          <strong style="color:#c62828;">1 — Pre-Novice</strong>
+          <p style="font-size:0.8rem;color:#555;margin-top:4px;">No awareness; cannot explain concept</p>
+        </div>
+        <div style="background:#f8f9fa;border-radius:8px;padding:12px;border-left:4px solid #e65100;">
+          <strong style="color:#e65100;">2 — Novice</strong>
+          <p style="font-size:0.8rem;color:#555;margin-top:4px;">Basic awareness; needs guidance to apply</p>
+        </div>
+        <div style="background:#f8f9fa;border-radius:8px;padding:12px;border-left:4px solid #2e7d32;">
+          <strong style="color:#2e7d32;">3 — Practitioner</strong>
+          <p style="font-size:0.8rem;color:#555;margin-top:4px;">Applies independently with confidence</p>
+        </div>
+        <div style="background:#f8f9fa;border-radius:8px;padding:12px;border-left:4px solid #1565c0;">
+          <strong style="color:#1565c0;">4 — Expert</strong>
+          <p style="font-size:0.8rem;color:#555;margin-top:4px;">Coaches others; shapes practice</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Competencies -->
+    {% regroup competencies by domain as domain_groups %}
+    {% for group in domain_groups %}
+    <div class="card">
+      <div class="section-header">
+        {% if group.grouper == 'Technical' %}⚙️ Technical Competencies
+        {% elif group.grouper == 'Behavioural' %}🎯 Behavioural Competencies
+        {% elif group.grouper == 'Leadership' %}🏆 Leadership Competencies
+        {% elif group.grouper == 'Safety' %}🦺 Safety Competencies (NON-NEGOTIABLE)
+        {% else %}{{ group.grouper }} Competencies
+        {% endif %}
+      </div>
+
+      {% if group.grouper == 'Safety' %}
+      <div class="alert alert-danger">
+        ⚠️ <strong>NON-NEGOTIABLE:</strong> A rating of 1 on any Safety competency triggers mandatory remediation regardless of overall score.
+      </div>
+      {% endif %}
+
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th style="width:60px">Code</th>
+            <th>Competency</th>
+            <th style="width:180px;text-align:center;">Rating (1–4) *</th>
+            <th style="width:200px;">Supporting Evidence / Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in group.list %}
+          <tr>
+            <td>
+              <span style="background:var(--jsw-navy);color:white;padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;">{{ c.code }}</span>
+            </td>
+            <td>
+              <div style="font-weight:600;font-size:0.88rem;">{{ c.name }}</div>
+              {% if c.safety %}
+              <span class="safety-badge">⚠️ NON-NEG</span>
+              {% endif %}
+              <div style="font-size:0.75rem;color:#718096;margin-top:4px;">Desired: Level {{ c.desired }}</div>
+            </td>
+            <td style="text-align:center;">
+              <div class="rating-group" style="justify-content:center;">
+                {% for val in "1234" %}
+                <div class="rating-option">
+                  <input type="radio" name="rating_{{ c.code }}" id="r_{{ c.code }}_{{ val }}" value="{{ val }}" {% if c.safety %}required{% endif %}>
+                  <label for="r_{{ c.code }}_{{ val }}" style="width:40px;height:40px;">{{ val }}</label>
+                </div>
+                {% endfor %}
+              </div>
+            </td>
+            <td>
+              <textarea class="form-control" name="evidence_{{ c.code }}" rows="2" placeholder="Specific example / observation..." style="font-size:0.8rem;padding:6px 10px;"></textarea>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endfor %}
+
+    {% if survey_type == 'post' %}
+    <div class="card" style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:2px solid #a5d6a7;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="font-size:2rem;">📈</div>
+        <div>
+          <div style="font-weight:700;color:#2e7d32;font-size:1rem;">Post-Training Assessment</div>
+          <div style="font-size:0.85rem;color:#388e3c;margin-top:4px;">
+            Target: ΔScore = Post − Pre ≥ +1.0 per competency. The dashboard will auto-calculate this delta for HR reporting.
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="sticky-submit">
+      <div class="submit-info">Rate all safety competencies (required). Evidence notes improve calibration accuracy.</div>
+      <button type="submit" class="btn btn-primary btn-lg">
+        Submit {% if survey_type == 'pre' %}Pre{% else %}Post{% endif %}-Assessment ✓
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function handleRaterChange(el) {
+  document.getElementById('lbl_candidate').style.borderColor = '#e2e8f0';
+  document.getElementById('lbl_manager').style.borderColor = '#e2e8f0';
+  if (el.value === 'candidate') document.getElementById('lbl_candidate').style.borderColor = '#2E4B8F';
+  else document.getElementById('lbl_manager').style.borderColor = '#2E4B8F';
+}
+</script>
+{% endblock %}

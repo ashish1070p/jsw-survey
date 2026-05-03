@@ -1,0 +1,189 @@
+{% extends "surveys/base.html" %}
+{% block title %}{{ meta.title }} — {{ role }} | JSW Motors{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-content">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+      <span class="role-badge role-{{ role }}">{{ role }}</span>
+      <span style="background:rgba(255,255,255,0.15);color:white;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;">Level 3 — Behavioural Observation</span>
+      <span style="background:rgba(196,30,58,0.7);color:white;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;">🔒 Manager / Supervisor Only</span>
+    </div>
+    <h1>{{ meta.icon }} {{ meta.title }}</h1>
+    <p>{{ meta.description }}</p>
+  </div>
+</div>
+
+<div class="main-content">
+  {% if error %}
+  <div class="alert alert-danger">⚠️ {{ error }}</div>
+  {% endif %}
+
+  <div class="alert alert-warning">
+    ⚠️ <strong>This form is for Line Managers / Supervisors only.</strong> BARS evaluations require 5–7 days of direct workplace observation before completing. Ratings must be anchored in specific observed behaviours — not general impressions.
+  </div>
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <!-- Header -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <div>
+          <div class="card-title">Observation Details</div>
+          <div class="card-subtitle">Enter details of the employee being evaluated</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Employee ID <span class="required">*</span></label>
+          <input class="form-control" type="text" name="employee_id" value="{{ prefill.emp_code }}" placeholder="Employee being evaluated" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Employee Name <span class="required">*</span></label>
+          <input class="form-control" type="text" name="name" value="{{ prefill.name }}" placeholder="Name of employee being evaluated" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Observation Period (Day Post-Training) <span class="required">*</span></label>
+          <select class="form-control" name="obs_number" required>
+            <option value="">— Select Observation Milestone —</option>
+            <option value="30">Day 30 Observation</option>
+            <option value="60">Day 60 Observation</option>
+            <option value="90">Day 90 Observation</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Observation Period (e.g. "01 Nov – 07 Nov 2024")</label>
+          <input class="form-control" type="text" name="period" placeholder="Date range of observation">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Supervisor / Evaluator Name <span class="required">*</span></label>
+          <input class="form-control" type="text" name="supervisor" placeholder="Your name (Supervisor completing this form)" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Evaluation Date <span class="required">*</span></label>
+          <input class="form-control" type="date" name="date" required>
+        </div>
+      </div>
+    </div>
+
+    <!-- BARS Scale Guide -->
+    <div class="card" style="padding:1.5rem;">
+      <div class="section-header">🔖 BARS Anchor Level Guide</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:0.75rem;">
+        <div style="background:#fce4ec;border-radius:8px;padding:12px;border-left:4px solid #c62828;text-align:center;">
+          <div style="font-size:1.4rem;font-weight:800;color:#c62828;">1</div>
+          <div style="font-weight:700;color:#c62828;font-size:0.85rem;">Below Standard</div>
+          <div style="font-size:0.78rem;color:#666;margin-top:4px;">Behaviours inconsistent with role expectations; remediation required</div>
+        </div>
+        <div style="background:#fff3e0;border-radius:8px;padding:12px;border-left:4px solid #e65100;text-align:center;">
+          <div style="font-size:1.4rem;font-weight:800;color:#e65100;">2</div>
+          <div style="font-weight:700;color:#e65100;font-size:0.85rem;">Developing</div>
+          <div style="font-size:0.78rem;color:#666;margin-top:4px;">Partial demonstration; needs coaching; on track if trend is positive</div>
+        </div>
+        <div style="background:#e8f5e9;border-radius:8px;padding:12px;border-left:4px solid #2e7d32;text-align:center;">
+          <div style="font-size:1.4rem;font-weight:800;color:#2e7d32;">3</div>
+          <div style="font-weight:700;color:#2e7d32;font-size:0.85rem;">Proficient ✓</div>
+          <div style="font-size:0.78rem;color:#666;margin-top:4px;">Consistent, independent demonstration. Target level for training ROI</div>
+        </div>
+        <div style="background:#e3f2fd;border-radius:8px;padding:12px;border-left:4px solid #1565c0;text-align:center;">
+          <div style="font-size:1.4rem;font-weight:800;color:#1565c0;">4</div>
+          <div style="font-weight:700;color:#1565c0;font-size:0.85rem;">Exemplary ⭐</div>
+          <div style="font-size:0.78rem;color:#666;margin-top:4px;">Exceeds standard; coaches peers; shapes team practice</div>
+        </div>
+      </div>
+      <div style="background:#f7f9ff;border-radius:8px;padding:12px;margin-top:12px;font-size:0.82rem;color:#555;">
+        🎯 <strong>Target:</strong> Average rating ≥ 3.0 across all competencies. Any safety competency rated 1 → mandatory remediation.
+      </div>
+    </div>
+
+    <!-- Competencies -->
+    {% for c in competencies %}
+    <div class="bars-block {% if c.safety %}safety-comp{% endif %}">
+      <div class="bars-comp-header">
+        <span class="bars-code">{{ c.code }}</span>
+        <span class="bars-name">{{ c.name }}</span>
+        {% if c.safety %}
+        <span class="safety-badge">⚠️ NON-NEGOTIABLE — Safety</span>
+        {% endif %}
+      </div>
+
+      {% if c.safety %}
+      <div class="alert alert-danger" style="padding:8px 12px;font-size:0.82rem;margin-bottom:10px;">
+        A rating of 1 on this competency automatically triggers mandatory safety remediation.
+      </div>
+      {% endif %}
+
+      <p style="font-size:0.82rem;color:#555;margin-bottom:10px;">
+        Select the anchor level that <strong>best describes the employee's observed behaviour</strong> during the observation period:
+      </p>
+
+      <div class="bars-levels">
+        <div class="bars-level-card">
+          <input type="radio" name="rating_{{ c.code }}" id="r_{{ c.code }}_1" value="1" {% if c.safety %}required{% endif %}>
+          <label for="r_{{ c.code }}_1">
+            <div class="level-badge" style="background:#fce4ec;color:#c62828;">Level 1 — Below Standard</div>
+            <div class="level-text">{{ c.L1 }}</div>
+          </label>
+        </div>
+        <div class="bars-level-card">
+          <input type="radio" name="rating_{{ c.code }}" id="r_{{ c.code }}_2" value="2">
+          <label for="r_{{ c.code }}_2">
+            <div class="level-badge" style="background:#fff3e0;color:#e65100;">Level 2 — Developing</div>
+            <div class="level-text">{{ c.L2 }}</div>
+          </label>
+        </div>
+        <div class="bars-level-card">
+          <input type="radio" name="rating_{{ c.code }}" id="r_{{ c.code }}_3" value="3">
+          <label for="r_{{ c.code }}_3">
+            <div class="level-badge" style="background:#e8f5e9;color:#2e7d32;">Level 3 — Proficient ✓</div>
+            <div class="level-text">{{ c.L3 }}</div>
+          </label>
+        </div>
+        <div class="bars-level-card">
+          <input type="radio" name="rating_{{ c.code }}" id="r_{{ c.code }}_4" value="4">
+          <label for="r_{{ c.code }}_4">
+            <div class="level-badge" style="background:#e3f2fd;color:#1565c0;">Level 4 — Exemplary ⭐</div>
+            <div class="level-text">{{ c.L4 }}</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:10px;margin-bottom:0;">
+        <label class="form-label" style="font-size:0.8rem;">Specific Observed Behaviour / Evidence <span style="color:#718096">(strongly recommended)</span></label>
+        <textarea class="form-control" name="evidence_{{ c.code }}" rows="2"
+                  placeholder="Describe specific observed behaviour with date/context. e.g. 'On 12 Nov, independently completed HV battery isolation without prompting...'"
+                  style="font-size:0.82rem;"></textarea>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="sticky-submit">
+      <div class="submit-info">Evidence notes are required for any Level 1 rating. Target: average ≥ 3.0/4.0</div>
+      <button type="submit" class="btn btn-primary btn-lg">
+        Submit BARS Evaluation ✓
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Attach click handler to level cards for visual selection
+document.querySelectorAll('.bars-level-card').forEach(card => {
+  card.addEventListener('click', function() {
+    const radio = this.querySelector('input[type="radio"]');
+    if (radio) {
+      radio.checked = true;
+      const name = radio.name;
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+        r.closest('.bars-level-card').classList.remove('selected');
+      });
+      this.classList.add('selected');
+    }
+  });
+});
+</script>
+{% endblock %}

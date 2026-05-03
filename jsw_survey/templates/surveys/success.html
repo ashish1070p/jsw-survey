@@ -1,0 +1,77 @@
+{% extends "surveys/base.html" %}
+{% block title %}Submitted — {{ meta.title }} | JSW Motors{% endblock %}
+
+{% block content %}
+<div style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:2rem;">
+  <div style="max-width:560px;width:100%;text-align:center;">
+
+    <!-- Success animation -->
+    <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#28a745,#20c064);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2.8rem;box-shadow:0 10px 40px rgba(40,167,69,0.4);animation:pop 0.5s ease;">
+      ✓
+    </div>
+
+    <h1 style="font-family:'Poppins',sans-serif;font-size:2rem;font-weight:800;color:#1A2D5A;margin-bottom:10px;">
+      Submitted Successfully!
+    </h1>
+    <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:1.5rem;">
+      <span class="role-badge role-{{ role }}">{{ role }}</span>
+      <span style="background:#e8f0fe;color:#2E4B8F;padding:4px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;">{{ meta.icon }} {{ meta.title }}</span>
+    </div>
+
+    <div style="background:#f0fdf4;border:2px solid #a5d6a7;border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;">
+      <p style="color:#2e7d32;font-size:0.95rem;line-height:1.7;">
+        Your <strong>{{ meta.title }}</strong> response has been securely saved to the cloud database. 
+        Thank you for contributing to JSW Motors' training effectiveness measurement.
+      </p>
+      <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid #c8e6c9;font-size:0.82rem;color:#388e3c;">
+        📊 Your response will be included in L3/L4 dashboard analytics for HR-BP reporting.
+      </div>
+    </div>
+
+    <!-- What's next -->
+    <div style="background:#f8f9fa;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;text-align:left;">
+      <div style="font-weight:700;color:#1A2D5A;margin-bottom:10px;">📌 What happens next?</div>
+      <div style="font-size:0.85rem;color:#4a5568;display:flex;flex-direction:column;gap:8px;">
+        {% if survey_type == 'happy-sheet' %}
+        <div>✅ Your trainer/HR-BP receives a notification to review L1 scores</div>
+        <div>📋 If NPS &lt; 8, HR-BP will follow up within 3 business days</div>
+        <div>📊 Happy Sheet data feeds into monthly training quality dashboard</div>
+        {% elif survey_type == 'pre-assessment' %}
+        <div>✅ Pre-assessment scores are saved as your baseline profile</div>
+        <div>📋 Your manager will also complete this independently</div>
+        <div>🔁 Post-assessment to be done 30–90 days after training completion</div>
+        {% elif survey_type == 'post-assessment' %}
+        <div>✅ ΔScore (Post − Pre) will be auto-calculated for your competencies</div>
+        <div>📋 HR-BP will review divergence between self and manager ratings</div>
+        <div>📊 Results feed into training ROI & capability gap dashboard</div>
+        {% elif 'bars' in survey_type %}
+        <div>✅ BARS observation recorded for {{ role }} employee</div>
+        <div>📋 Repeat at Day 30, 60, and 90 for trend analysis</div>
+        <div>📊 BARS data feeds into L3 behaviour change dashboard</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="/" class="btn btn-primary">
+        🏠 Back to Home
+      </a>
+      <a href="/survey/{{ role|lower }}/{% if survey_type == 'happy-sheet' %}happy-sheet{% elif survey_type == 'pre-assessment' %}pre-assessment{% elif survey_type == 'post-assessment' %}post-assessment{% elif survey_type == 'bars-technical' %}bars-technical{% elif survey_type == 'bars-behavioural' %}bars-behavioural{% else %}bars-leadership{% endif %}/" class="btn btn-outline">
+        ↩ Submit Another Response
+      </a>
+    </div>
+
+    <p style="margin-top:1.5rem;font-size:0.75rem;color:#718096;">
+      © JSW Motors Training Evaluation System · Confidential
+    </p>
+  </div>
+</div>
+
+<style>
+@keyframes pop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+</style>
+{% endblock %}
